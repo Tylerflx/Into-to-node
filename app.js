@@ -1,12 +1,22 @@
 const express = require("express");
-const bodyParser = require("body-parser");
+// const bodyParser = require("body-parser");
 const app = express();
 const https = require("https");
+const dotenv = require("dotenv");
+dotenv.config();
 
 //connect public static folder
 app.use(express.static("public"));
 //connect bodyParser
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.urlencoded({extended: true}));
+
+//Credentials
+const API_server = process.env.SERVER;
+const list_id = process.env.LIST_ID;
+const string_name = process.env.STRING_NAME;
+const API_key = process.env.API_KEY;
+const auth_key = string_name + ":" + API_key;
+
 //get request
 app.get("/", function(req, res){
   res.sendFile(__dirname+"/signup.html")
@@ -32,11 +42,11 @@ app.post("/", function(req, res){
   //convert js to string
   const jsonData = JSON.stringify(data);
   //endpoint api url
-  const url = "https://{API-SERVER}.api.mailchimp.com/3.0/lists/{LIST-ID}";
+  const url = "https://"+API_server+".api.mailchimp.com/3.0/lists/"+list_id;
   //info data
   const options = {
     method: "POST",
-    auth:"{STRING-NAME}:{API-KEY}"
+    auth: auth_key
   };
   //make request
   const request = https.request(url, options, function(response){
